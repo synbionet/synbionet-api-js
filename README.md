@@ -10,7 +10,7 @@ An api wrapper for synbionet based on ethers.
 
    **_allow a few seconds for contracts to deploy before testing api, otherwise contract addresses my be impacted_**
 
-3. run `npm install` to install dependencies
+3. run `npm install && npm update` to install/update dependencies
 
 4. run `npm run test` to test
 
