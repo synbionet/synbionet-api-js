@@ -19,9 +19,9 @@ exports.MarketNamespace = exports.PortfolioNamespace = exports.CoreNamespace = e
 __exportStar(require("./types/types"), exports);
 var synbionet_1 = require("./api/synbionet");
 Object.defineProperty(exports, "SynBioNet", { enumerable: true, get: function () { return synbionet_1.SynBioNet; } });
-var core_namespace_1 = require("./api/core-namespace");
-Object.defineProperty(exports, "CoreNamespace", { enumerable: true, get: function () { return core_namespace_1.CoreNamespace; } });
-var portfolio_namespace_1 = require("./api/portfolio-namespace");
-Object.defineProperty(exports, "PortfolioNamespace", { enumerable: true, get: function () { return portfolio_namespace_1.PortfolioNamespace; } });
-var market_namespace_1 = require("./api/market-namespace");
-Object.defineProperty(exports, "MarketNamespace", { enumerable: true, get: function () { return market_namespace_1.MarketNamespace; } });
+var core_1 = require("./api/core");
+Object.defineProperty(exports, "CoreNamespace", { enumerable: true, get: function () { return core_1.CoreNamespace; } });
+var portfolio_1 = require("./api/portfolio");
+Object.defineProperty(exports, "PortfolioNamespace", { enumerable: true, get: function () { return portfolio_1.PortfolioNamespace; } });
+var market_1 = require("./api/market");
+Object.defineProperty(exports, "MarketNamespace", { enumerable: true, get: function () { return market_1.MarketNamespace; } });

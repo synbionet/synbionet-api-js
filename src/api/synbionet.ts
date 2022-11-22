@@ -1,8 +1,8 @@
 import { SynBioNetSettings } from '../types/types';
 import { SynBioNetConfig } from './synbionet-config';
-import { CoreNamespace } from './core-namespace';
-import { PortfolioNamespace } from './portfolio-namespace';
-import { MarketNamespace } from './market-namespace';
+import { CoreNamespace } from './core';
+import { PortfolioNamespace } from './portfolio';
+import { MarketNamespace } from './market';
 
 /**
  * The SynBioNet client. This class is the main entry point into SynBioNet's

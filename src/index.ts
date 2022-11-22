@@ -4,8 +4,8 @@ export * from './types/types';
 
 export { SynBioNet } from './api/synbionet';
 
-export { CoreNamespace } from './api/core-namespace';
+export { CoreNamespace } from './api/core';
 
-export { PortfolioNamespace } from './api/portfolio-namespace';
+export { PortfolioNamespace } from './api/portfolio';
 
-export { MarketNamespace } from './api/market-namespace';
+export { MarketNamespace } from './api/market';

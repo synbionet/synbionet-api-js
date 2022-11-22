@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SynBioNet = void 0;
 const synbionet_config_1 = require("./synbionet-config");
-const core_namespace_1 = require("./core-namespace");
-const portfolio_namespace_1 = require("./portfolio-namespace");
-const market_namespace_1 = require("./market-namespace");
+const core_1 = require("./core");
+const portfolio_1 = require("./portfolio");
+const market_1 = require("./market");
 /**
  * The SynBioNet client. This class is the main entry point into SynBioNet's
  * APIs and separates functionality into different namespaces.
@@ -28,9 +28,9 @@ class SynBioNet {
      */
     constructor(settings) {
         this.config = new synbionet_config_1.SynBioNetConfig(settings);
-        this.core = new core_namespace_1.CoreNamespace(this.config);
-        this.portfolio = new portfolio_namespace_1.PortfolioNamespace(this.config);
-        this.market = new market_namespace_1.MarketNamespace(this.config);
+        this.core = new core_1.CoreNamespace(this.config);
+        this.portfolio = new portfolio_1.PortfolioNamespace(this.config);
+        this.market = new market_1.MarketNamespace(this.config);
     }
     /**
      * This requests to connect with a wallet client in the webui
