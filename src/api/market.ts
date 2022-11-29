@@ -1,10 +1,5 @@
 import { SynBioNetConfig } from './synbionet-config';
-import {
-  connectToBioAssetContract,
-  connectToBioTokenContract,
-  connectToMarketContract,
-} from '../util/utils';
-import { parseEther } from 'ethers/lib/utils';
+import { connectToBioAssetContract, connectToMarketContract } from '../util/utils';
 
 /**
  * The market namespace contains all the functionality related to the synbionet market
@@ -18,41 +13,6 @@ export class MarketNamespace {
   constructor(private readonly config: SynBioNetConfig) {}
 
   /**
-   * Buy BioTokens
-   * @param qty - amt to buy
-   * @public
-   */
-  async buyBioTokens(qty: number): Promise<any> {
-    const provider = await this.config.getProvider();
-    const signer = provider.getSigner();
-    const bioToken = connectToBioTokenContract(signer);
-    // add value to transaction at rate of 0.001 eth per token
-    const tx = await bioToken.buy(qty, {
-      value: parseEther((0.001 * qty).toString()),
-    });
-    tx.wait();
-    return true;
-  }
-
-  /**
-   * Withdraw biotokens
-   * @param qty
-   * @public
-   */
-  async withdrawBioTokens(qty: number): Promise<any> {
-    const provider = await this.config.getProvider();
-    const signer = provider.getSigner();
-    const bioToken = connectToBioTokenContract(signer);
-    try {
-      const tx = await bioToken.withdraw(qty);
-      tx.wait();
-      return true;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  /**
    * Return specific bioasset market details
    * @param contractAddress - address of bioasset contract
    * @public
@@ -60,11 +20,23 @@ export class MarketNamespace {
   async getProduct(contractAddress: string): Promise<any> {
     const provider = await this.config.getProvider();
     const market = connectToMarketContract(provider);
-    const product = await market.getProduct(contractAddress);
+    const bioAsset = connectToBioAssetContract(contractAddress, provider);
+    const responses = await Promise.all([
+      await market.getProduct(contractAddress),
+      await bioAsset.availableLicenses(),
+      await bioAsset.owner(),
+      await bioAsset.uri(1),
+    ]);
+    const [productInfo, availableLicenses, owner, uri] = responses;
+    // const product = await market.getProduct(contractAddress);
     return {
-      licensePrice: product.licensePrice.toString(),
-      ipForSale: product.ipForSale,
-      ipPrice: product.licensePrice.toString(),
+      // toString method is called because contracts return Big Numbers
+      owner,
+      uri,
+      availableLicenses: availableLicenses.toString(),
+      licensePrice: productInfo.licensePrice.toString(),
+      ipForSale: productInfo.ipForSale,
+      ipPrice: productInfo.ipPrice.toString(),
     };
   }
 
@@ -77,5 +49,48 @@ export class MarketNamespace {
     const provider = await this.config.getProvider();
     const bioAsset = connectToBioAssetContract(contractAddress, provider);
     return await bioAsset.uri(1);
+  }
+
+  async registerAssetOnMarket(
+    bioAssetContractAddress: string,
+    licenseQty: number,
+    licensePrice: number,
+    isIPForSale: boolean,
+    ipPrice: number
+  ): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const bioAsset = connectToBioAssetContract(bioAssetContractAddress, signer);
+    const tx = await bioAsset.registerWithMarket(licenseQty, licensePrice, isIPForSale, ipPrice);
+    return tx.wait();
+  }
+
+  async updateAssetOnMarket(
+    bioAssetContractAddress: string,
+    licensePrice: number,
+    isIPForSale: boolean,
+    ipPrice: number
+  ): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const bioAsset = connectToBioAssetContract(bioAssetContractAddress, signer);
+    const tx = await bioAsset.updateWithMarket(licensePrice, isIPForSale, ipPrice);
+    return tx.wait();
+  }
+
+  async buyLicense(contractAddress: string, qty: number): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const market = connectToMarketContract(signer);
+    const tx = await market.buyLicense(contractAddress, qty);
+    return tx.wait();
+  }
+
+  async buyAsset(contractAddress: string): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const market = connectToMarketContract(signer);
+    const tx = await market.buyAsset(contractAddress);
+    return tx.wait();
   }
 }

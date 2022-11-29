@@ -24,6 +24,41 @@ class PortfolioNamespace {
         this.config = config;
     }
     /**
+     * Buy BioTokens
+     * @param qty - amt to buy
+     * @public
+     */
+    buyBioTokens(qty) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const provider = yield this.config.getProvider();
+            const signer = provider.getSigner();
+            const bioToken = (0, utils_1.connectToBioTokenContract)(signer);
+            const tx = yield bioToken.buy(qty, {
+                value: yield bioToken.calculateCost(qty),
+            });
+            return tx.wait();
+        });
+    }
+    /**
+     * Withdraw biotokens
+     * @param qty
+     * @public
+     */
+    withdrawBioTokens(qty) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const provider = yield this.config.getProvider();
+            const signer = provider.getSigner();
+            const bioToken = (0, utils_1.connectToBioTokenContract)(signer);
+            try {
+                const tx = yield bioToken.withdraw(qty);
+                return tx.wait();
+            }
+            catch (err) {
+                return err;
+            }
+        });
+    }
+    /**
      * Returns biotoken balance for account
      * @param address - account of interest
      * @public
@@ -45,7 +80,13 @@ class PortfolioNamespace {
             const provider = yield this.config.getProvider();
             const signer = provider.getSigner();
             const factory = (0, utils_1.connectToFactoryContract)(signer);
-            return yield factory.createAsset(uri);
+            const tx = yield factory.createAsset(uri);
+            tx.wait();
+            // method queries the event to return the address of the mewly created contract
+            const eventFilter = factory.filters.BioAssetCreated();
+            const blockNum = yield provider.getBlockNumber();
+            const events = yield factory.queryFilter(eventFilter, blockNum - 1, blockNum);
+            return events[0].args ? events[0].args[0] : undefined;
         });
     }
 }

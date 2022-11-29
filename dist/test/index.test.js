@@ -13,7 +13,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const src_1 = require("../src");
 const ethers_1 = require("ethers");
 const const_1 = require("../src/util/const");
-// TODO: WAAAY more testing
+let newIPAssetAddress = '';
+// pre-funded wallet address created when spinning up anvil node for local testing
+// used by default with creating new instance of SynBioNet without passing a wallet client
+const deployerAddress = ethers_1.ethers.utils.computeAddress('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80');
 describe('get blocknumber', () => {
     it(`get blockNumber on network`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
@@ -28,28 +31,47 @@ describe('Get uri', () => {
         expect(ip).toBe('http://hello.there');
     }));
 });
-describe('create IP', () => {
-    it(`creates ip`, () => __awaiter(void 0, void 0, void 0, function* () {
+describe('create IP, register with market, and get product', () => {
+    it(`creates ip, registers with market, market returns product data`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
-        const newAsset = yield synbionet.portfolio.createAsset('http://hello.there');
-        expect(newAsset).toBeDefined();
+        newIPAssetAddress = yield synbionet.portfolio.createAsset('http://hi.there');
+        yield synbionet.market.registerAssetOnMarket(newIPAssetAddress, 10, 7, false, 25);
+        const newProduct = yield synbionet.market.getProduct(newIPAssetAddress);
+        expect(newProduct.owner).toBe(deployerAddress);
+        expect(newProduct.ipPrice).toBe('25');
+        expect(newProduct.availableLicenses).toBe('10');
+        expect(newProduct.ipForSale).toBe(false);
+        expect(newProduct.licensePrice).toBe('7');
+        expect(newProduct.uri).toBe('http://hi.there');
     }));
 });
-describe('get product', () => {
-    it(`creates ip`, () => __awaiter(void 0, void 0, void 0, function* () {
+describe('update product', () => {
+    it('updates product info on market', () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
-        const product = yield synbionet.market.getProduct(const_1.BIOASSET_CONTRACT.address);
-        expect(product).toBeDefined();
+        yield synbionet.market.updateAssetOnMarket(newIPAssetAddress, 3, true, 2);
+        const newProduct = yield synbionet.market.getProduct(newIPAssetAddress);
+        expect(newProduct.owner).toBe(deployerAddress);
+        expect(newProduct.licensePrice).toBe('3');
+        expect(newProduct.ipForSale).toBe(true);
+        expect(newProduct.ipPrice).toBe('2');
     }));
 });
 describe('buy tokens', () => {
     it(`buys tokens`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
-        // pre-funded wallet address created when spinning up anvil node for local testing
-        const deployerAddress = ethers_1.ethers.utils.computeAddress('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80');
         const startingBalance = yield synbionet.portfolio.getBioTokenBalance(deployerAddress);
-        yield synbionet.market.buyBioTokens(6);
+        yield synbionet.portfolio.buyBioTokens(6);
         const endingBalance = yield synbionet.portfolio.getBioTokenBalance(deployerAddress);
         expect(endingBalance - startingBalance).toBe(6);
     }));
 });
+describe('withdraw tokens', () => {
+    it(`withdraws tokens`, () => __awaiter(void 0, void 0, void 0, function* () {
+        const synbionet = new src_1.SynBioNet();
+        const startingBalance = yield synbionet.portfolio.getBioTokenBalance(deployerAddress);
+        yield synbionet.portfolio.withdrawBioTokens(6);
+        const endingBalance = yield synbionet.portfolio.getBioTokenBalance(deployerAddress);
+        expect(endingBalance - startingBalance).toBe(-6);
+    }));
+});
+// TODO: buyLicense and buyAsset tests

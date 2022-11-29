@@ -13,6 +13,38 @@ export class PortfolioNamespace {
   constructor(private readonly config: SynBioNetConfig) {}
 
   /**
+   * Buy BioTokens
+   * @param qty - amt to buy
+   * @public
+   */
+  async buyBioTokens(qty: number): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const bioToken = connectToBioTokenContract(signer);
+    const tx = await bioToken.buy(qty, {
+      value: await bioToken.calculateCost(qty),
+    });
+    return tx.wait();
+  }
+
+  /**
+   * Withdraw biotokens
+   * @param qty
+   * @public
+   */
+  async withdrawBioTokens(qty: number): Promise<any> {
+    const provider = await this.config.getProvider();
+    const signer = provider.getSigner();
+    const bioToken = connectToBioTokenContract(signer);
+    try {
+      const tx = await bioToken.withdraw(qty);
+      return tx.wait();
+    } catch (err) {
+      return err;
+    }
+  }
+
+  /**
    * Returns biotoken balance for account
    * @param address - account of interest
    * @public
@@ -32,6 +64,13 @@ export class PortfolioNamespace {
     const provider = await this.config.getProvider();
     const signer = provider.getSigner();
     const factory = connectToFactoryContract(signer);
-    return await factory.createAsset(uri);
+    const tx = await factory.createAsset(uri);
+    tx.wait();
+
+    // method queries the event to return the address of the mewly created contract
+    const eventFilter = factory.filters.BioAssetCreated();
+    const blockNum = await provider.getBlockNumber();
+    const events = await factory.queryFilter(eventFilter, blockNum - 1, blockNum);
+    return events[0].args ? events[0].args[0] : undefined;
   }
 }
