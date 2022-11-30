@@ -96,11 +96,11 @@ class MarketNamespace {
             return tx1.wait();
         });
     }
-    licenseBalanceOf(contractAddress, walletAddress) {
+    balanceOfLicense(contractAddress, walletAddress) {
         return __awaiter(this, void 0, void 0, function* () {
             const provider = yield this.config.getProvider();
             const bioAsset = (0, utils_1.connectToBioAssetContract)(contractAddress, provider);
-            const balance = yield bioAsset.balanceOf(walletAddress, bioAsset.LICENSE());
+            const balance = yield bioAsset.balanceOf(walletAddress, yield bioAsset.LICENSE());
             return balance.toString();
         });
     }

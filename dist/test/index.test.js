@@ -56,6 +56,13 @@ describe('update product', () => {
         expect(newProduct.ipPrice).toBe('2');
     }));
 });
+describe('get sublicense balance', () => {
+    it('gets sublicense balance', () => __awaiter(void 0, void 0, void 0, function* () {
+        const synbionet = new src_1.SynBioNet();
+        const licenseBalance = yield synbionet.market.balanceOfLicense(newIPAssetAddress, deployerAddress);
+        expect(licenseBalance).toBe('10');
+    }));
+});
 describe('buy tokens', () => {
     it(`buys tokens`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();

@@ -57,6 +57,17 @@ describe('update product', () => {
   });
 });
 
+describe('get sublicense balance', () => {
+  it('gets sublicense balance', async () => {
+    const synbionet = new SynBioNet();
+    const licenseBalance = await synbionet.market.balanceOfLicense(
+      newIPAssetAddress,
+      deployerAddress
+    );
+    expect(licenseBalance).toBe('10');
+  });
+});
+
 describe('buy tokens', () => {
   it(`buys tokens`, async () => {
     const synbionet = new SynBioNet();

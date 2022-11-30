@@ -98,7 +98,7 @@ export class MarketNamespace {
   async balanceOfLicense(contractAddress: string, walletAddress: string): Promise<any> {
     const provider = await this.config.getProvider();
     const bioAsset = connectToBioAssetContract(contractAddress, provider);
-    const balance = await bioAsset.balanceOf(walletAddress, bioAsset.LICENSE());
+    const balance = await bioAsset.balanceOf(walletAddress, await bioAsset.LICENSE());
     return balance.toString();
   }
 
