@@ -1,5 +1,10 @@
 import { SynBioNetConfig } from './synbionet-config';
-import { connectToBioAssetContract, connectToMarketContract } from '../util/utils';
+import {
+  connectToBioAssetContract,
+  connectToBioTokenContract,
+  connectToMarketContract,
+} from '../util/utils';
+import { MARKET_CONTRACT } from '../util/const';
 
 /**
  * The market namespace contains all the functionality related to the synbionet market
@@ -82,8 +87,12 @@ export class MarketNamespace {
     const provider = await this.config.getProvider();
     const signer = provider.getSigner();
     const market = connectToMarketContract(signer);
-    const tx = await market.buyLicense(contractAddress, qty);
-    return tx.wait();
+    const { licensePrice } = await market.getProduct(contractAddress);
+    const bioToken = connectToBioTokenContract(signer);
+    const tx0 = await bioToken.approve(MARKET_CONTRACT.address, licensePrice.mul(qty));
+    await tx0.wait();
+    const tx1 = await market.buyLicense(contractAddress, qty);
+    return tx1.wait();
   }
 
   async buyAsset(contractAddress: string): Promise<any> {

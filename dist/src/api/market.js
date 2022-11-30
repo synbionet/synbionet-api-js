@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketNamespace = void 0;
 const utils_1 = require("../util/utils");
+const const_1 = require("../util/const");
 /**
  * The market namespace contains all the functionality related to the synbionet market
  *
@@ -87,8 +88,12 @@ class MarketNamespace {
             const provider = yield this.config.getProvider();
             const signer = provider.getSigner();
             const market = (0, utils_1.connectToMarketContract)(signer);
-            const tx = yield market.buyLicense(contractAddress, qty);
-            return tx.wait();
+            const { licensePrice } = yield market.getProduct(contractAddress);
+            const bioToken = (0, utils_1.connectToBioTokenContract)(signer);
+            const tx0 = yield bioToken.approve(const_1.MARKET_CONTRACT.address, licensePrice.mul(qty));
+            yield tx0.wait();
+            const tx1 = yield market.buyLicense(contractAddress, qty);
+            return tx1.wait();
         });
     }
     buyAsset(contractAddress) {
