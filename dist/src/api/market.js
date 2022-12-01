@@ -8,10 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketNamespace = void 0;
 const utils_1 = require("../util/utils");
 const const_1 = require("../util/const");
+const supertest_1 = __importDefault(require("supertest"));
+const const_2 = require("../util/const");
 /**
  * The market namespace contains all the functionality related to the synbionet market
  *
@@ -113,5 +118,27 @@ class MarketNamespace {
             return tx.wait();
         });
     }
+    getAllBioAssets() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resp = yield get('/assets');
+            if (resp.status === 200)
+                return resp.body;
+            return undefined;
+        });
+    }
+    getBioAssetById(did) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resp = yield get(`/asset/${did}`);
+            if (resp.status === 200)
+                return resp.body;
+            return undefined;
+        });
+    }
 }
 exports.MarketNamespace = MarketNamespace;
+function get(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resp = yield (0, supertest_1.default)(const_2.INDEXER_URL).get(path).set('Accept', 'application/json');
+        return resp;
+    });
+}

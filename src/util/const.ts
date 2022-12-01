@@ -22,3 +22,6 @@ export const BIOASSET_CONTRACT = {
   address: '0x75537828f2ce51be7289709686a69cbfdbb714f1',
   abi: BioAsset.abi,
 };
+
+export const INDEXER_URL = 'http://127.0.0.1:8081';
+export const DID_PREFIX = 'did:synbio';

@@ -8,9 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortfolioNamespace = void 0;
 const utils_1 = require("../util/utils");
+const ethers_1 = require("ethers");
+const supertest_1 = __importDefault(require("supertest"));
+const const_1 = require("../util/const");
 /**
  * The portfolio namespace contains all the functionality related account assets
  *
@@ -72,22 +78,68 @@ class PortfolioNamespace {
     }
     /**
      * Creates new bioAsset
-     * @param uri - tokenURI for new asset
      * @public
      */
-    createAsset(uri) {
+    createAsset(name, desc, license) {
         return __awaiter(this, void 0, void 0, function* () {
             const provider = yield this.config.getProvider();
             const signer = provider.getSigner();
             const factory = (0, utils_1.connectToFactoryContract)(signer);
-            const tx = yield factory.createAsset(uri);
-            tx.wait();
-            // method queries the event to return the address of the mewly created contract
-            const eventFilter = factory.filters.BioAssetCreated();
-            const blockNum = yield provider.getBlockNumber();
-            const events = yield factory.queryFilter(eventFilter, blockNum - 1, blockNum);
-            return events[0].args ? events[0].args[0] : undefined;
+            const gasEstimate = yield factory.estimateGas.createAsset('arbitrary_value');
+            const inflatedGasEstimate = gasEstimate.add(gasEstimate.div(5)); // inflatedGasEstimate is 120% of gas estimate
+            const signerBalance = yield provider.getBalance(yield signer.getAddress());
+            // check if wallet has at least 120% of gas estimate to deploy contract before saving metadata to arweave
+            // TODO: proper error handling
+            if (signerBalance.lt(inflatedGasEstimate))
+                return console.error('Not enough funds in wallet to pay for gas. Asset not created.');
+            const bioAssetAddress = yield factory.callStatic.createAsset('arbitrary_value');
+            const meta = createMetaData(name, desc, license, bioAssetAddress, yield signer.getChainId());
+            const resp = yield post('/asset', meta);
+            if (resp.status !== 200)
+                return console.error('Error publishing metadata to decentralized storage. Asset not created.');
+            const tokenURI = `${const_1.INDEXER_URL}/${meta.did}`;
+            const tx = yield factory.createAsset(tokenURI);
+            yield tx.wait();
+            return bioAssetAddress;
         });
     }
 }
 exports.PortfolioNamespace = PortfolioNamespace;
+/**
+ * Create an Asset
+ * @param name
+ * @param desc
+ * @param license
+ * @param nftAddress
+ * @param chainid
+ * @returns {AssetMetaData}
+ */
+function createMetaData(name, desc, license, nftAddress, chainid) {
+    return {
+        did: generateDid(nftAddress, chainid),
+        name: name,
+        description: desc,
+        license: license,
+        nftAddress: nftAddress,
+        tokenAddress: '0xExampleAddress',
+        serviceEndpoint: 'https://endpoint.example',
+    };
+}
+/**
+ * Generate a decentralized identifier from the contract
+ * address and chain id.
+ *
+ * @param {String} address the address of the contract
+ * @param {Number} chainId the chain id for the ethereum network
+ * @returns {String} the DID
+ */
+function generateDid(nftAddress, chainId) {
+    const did_value = ethers_1.ethers.utils.id(nftAddress + chainId);
+    return `${const_1.DID_PREFIX}:${did_value}`;
+}
+function post(path, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resp = yield (0, supertest_1.default)(const_1.INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
+        return resp;
+    });
+}

@@ -34,7 +34,7 @@ describe('Get uri', () => {
 describe('create IP, register with market, and get product', () => {
     it(`creates ip, registers with market, market returns product data`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
-        newIPAssetAddress = yield synbionet.portfolio.createAsset('http://hi.there');
+        newIPAssetAddress = yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license');
         yield synbionet.market.registerAssetOnMarket(newIPAssetAddress, 10, 7, false, 25);
         const newProduct = yield synbionet.market.getProduct(newIPAssetAddress);
         expect(newProduct.owner).toBe(deployerAddress);
@@ -42,7 +42,25 @@ describe('create IP, register with market, and get product', () => {
         expect(newProduct.availableLicenses).toBe('10');
         expect(newProduct.ipForSale).toBe(false);
         expect(newProduct.licensePrice).toBe('7');
-        expect(newProduct.uri).toBe('http://hi.there');
+        // expect(newProduct.uri).toBe('http://hi.there');
+    }));
+});
+describe('gets all assets', () => {
+    it('creates an asset and returns all assets including new one', () => __awaiter(void 0, void 0, void 0, function* () {
+        const synbionet = new src_1.SynBioNet();
+        const originalAssets = yield synbionet.market.getAllBioAssets();
+        yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license');
+        const newAssets = yield synbionet.market.getAllBioAssets();
+        expect(newAssets.length - originalAssets.length).toBe(1);
+    }));
+});
+describe('gets specific asset', () => {
+    it('returns asset details', () => __awaiter(void 0, void 0, void 0, function* () {
+        const synbionet = new src_1.SynBioNet();
+        const assetList = yield synbionet.market.getAllBioAssets();
+        const latestAsset = assetList[assetList.length - 1];
+        const assetDetails = yield synbionet.market.getBioAssetById(latestAsset.did);
+        console.log(assetDetails);
     }));
 });
 describe('update product', () => {

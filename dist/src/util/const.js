@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BIOASSET_CONTRACT = exports.BIOTOKEN_CONTRACT = exports.FACTORY_CONTRACT = exports.MARKET_CONTRACT = void 0;
+exports.DID_PREFIX = exports.INDEXER_URL = exports.BIOASSET_CONTRACT = exports.BIOTOKEN_CONTRACT = exports.FACTORY_CONTRACT = exports.MARKET_CONTRACT = void 0;
 const bioasset_json_1 = __importDefault(require("@synbionet/contracts/artifacts/bioasset.json"));
 const biotoken_json_1 = __importDefault(require("@synbionet/contracts/artifacts/biotoken.json"));
 const factory_json_1 = __importDefault(require("@synbionet/contracts/artifacts/factory.json"));
@@ -24,3 +24,5 @@ exports.BIOASSET_CONTRACT = {
     address: '0x75537828f2ce51be7289709686a69cbfdbb714f1',
     abi: bioasset_json_1.default.abi,
 };
+exports.INDEXER_URL = 'http://127.0.0.1:8081';
+exports.DID_PREFIX = 'did:synbio';

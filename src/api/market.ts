@@ -5,6 +5,8 @@ import {
   connectToMarketContract,
 } from '../util/utils';
 import { MARKET_CONTRACT } from '../util/const';
+import request from 'supertest';
+import { INDEXER_URL } from '../util/const';
 
 /**
  * The market namespace contains all the functionality related to the synbionet market
@@ -109,4 +111,21 @@ export class MarketNamespace {
     const tx = await market.buyAsset(contractAddress);
     return tx.wait();
   }
+
+  async getAllBioAssets(): Promise<any> {
+    const resp = await get('/assets');
+    if (resp.status === 200) return resp.body;
+    return undefined;
+  }
+
+  async getBioAssetById(did: string): Promise<any> {
+    const resp = await get(`/asset/${did}`);
+    if (resp.status === 200) return resp.body;
+    return undefined;
+  }
+}
+
+async function get(path: string): Promise<request.Response> {
+  const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
+  return resp;
 }

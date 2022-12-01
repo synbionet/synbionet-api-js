@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.2.2",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "eslint": "^8.27.0",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@synbionet/contracts": "github:synbionet/synbionet-core",
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "supertest": "^6.3.1"
   }
 }
