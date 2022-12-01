@@ -6,7 +6,7 @@ import {
 } from '../util/utils';
 import { MARKET_CONTRACT } from '../util/const';
 // import request from 'supertest';
-import axios from 'axios';
+import Axios from 'axios';
 import { INDEXER_URL } from '../util/const';
 
 /**
@@ -131,7 +131,7 @@ async function get(path: string): Promise<any> {
     'content-type': 'application/json',
     Accept: 'application/json',
   };
-  return await axios.get(`${INDEXER_URL}${path}`, { headers: configHeaders });
+  return await Axios.get(`${INDEXER_URL}${path}`, { headers: configHeaders });
 }
 
 // async function get(path: string): Promise<request.Response> {
