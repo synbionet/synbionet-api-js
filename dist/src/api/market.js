@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketNamespace = void 0;
 const utils_1 = require("../util/utils");
 const const_1 = require("../util/const");
-const supertest_1 = __importDefault(require("supertest"));
+// import request from 'supertest';
+const axios_1 = __importDefault(require("axios"));
 const const_2 = require("../util/const");
 /**
  * The market namespace contains all the functionality related to the synbionet market
@@ -122,7 +123,7 @@ class MarketNamespace {
         return __awaiter(this, void 0, void 0, function* () {
             const resp = yield get('/assets');
             if (resp.status === 200)
-                return resp.body;
+                return resp.data;
             return undefined;
         });
     }
@@ -130,7 +131,7 @@ class MarketNamespace {
         return __awaiter(this, void 0, void 0, function* () {
             const resp = yield get(`/asset/${did}`);
             if (resp.status === 200)
-                return resp.body;
+                return resp.data;
             return undefined;
         });
     }
@@ -138,7 +139,13 @@ class MarketNamespace {
 exports.MarketNamespace = MarketNamespace;
 function get(path) {
     return __awaiter(this, void 0, void 0, function* () {
-        const resp = yield (0, supertest_1.default)(const_2.INDEXER_URL).get(path).set('Accept', 'application/json');
-        return resp;
+        const configHeaders = {
+            'content-type': 'application/json',
+            Accept: 'application/json',
+        };
+        return yield axios_1.default.get(`${const_2.INDEXER_URL}${path}`, { headers: configHeaders });
     });
 }
+// async function get(path: string): Promise<request.Response> {
+//   const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
+//   return resp;

@@ -5,7 +5,8 @@ import {
   connectToMarketContract,
 } from '../util/utils';
 import { MARKET_CONTRACT } from '../util/const';
-import request from 'supertest';
+// import request from 'supertest';
+import axios from 'axios';
 import { INDEXER_URL } from '../util/const';
 
 /**
@@ -114,18 +115,25 @@ export class MarketNamespace {
 
   async getAllBioAssets(): Promise<any> {
     const resp = await get('/assets');
-    if (resp.status === 200) return resp.body;
+    if (resp.status === 200) return resp.data;
     return undefined;
   }
 
   async getBioAssetById(did: string): Promise<any> {
     const resp = await get(`/asset/${did}`);
-    if (resp.status === 200) return resp.body;
+    if (resp.status === 200) return resp.data;
     return undefined;
   }
 }
 
-async function get(path: string): Promise<request.Response> {
-  const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
-  return resp;
+async function get(path: string): Promise<any> {
+  const configHeaders = {
+    'content-type': 'application/json',
+    Accept: 'application/json',
+  };
+  return await axios.get(`${INDEXER_URL}${path}`, { headers: configHeaders });
 }
+
+// async function get(path: string): Promise<request.Response> {
+//   const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
+//   return resp;

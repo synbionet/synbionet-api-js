@@ -1,8 +1,8 @@
 import { SynBioNetConfig } from './synbionet-config';
 import { connectToBioTokenContract, connectToFactoryContract } from '../util/utils';
 import { ethers } from 'ethers';
-import request from 'supertest';
 import { INDEXER_URL, DID_PREFIX } from '../util/const';
+import axios from 'axios';
 
 /**
  * The portfolio namespace contains all the functionality related account assets
@@ -89,7 +89,7 @@ export class PortfolioNamespace {
       serviceEndpoint,
       await signer.getChainId()
     );
-    const resp = await post('/asset', meta);
+    const resp = await axios.post(`${INDEXER_URL}/asset`, meta);
 
     if (resp.status !== 200)
       return console.error(
@@ -167,7 +167,7 @@ function generateDid(nftAddress: string, chainId: number): string {
   return `${DID_PREFIX}:${did_value}`;
 }
 
-async function post(path: string, data: any): Promise<request.Response> {
-  const resp = await request(INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
-  return resp;
-}
+// async function post(path: string, data: any): Promise<request.Response> {
+//   const resp = await request(INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
+//   return resp;
+// }

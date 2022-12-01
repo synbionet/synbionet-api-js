@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortfolioNamespace = void 0;
 const utils_1 = require("../util/utils");
 const ethers_1 = require("ethers");
-const supertest_1 = __importDefault(require("supertest"));
 const const_1 = require("../util/const");
+const axios_1 = __importDefault(require("axios"));
 /**
  * The portfolio namespace contains all the functionality related account assets
  *
@@ -94,7 +94,7 @@ class PortfolioNamespace {
                 return console.error('Not enough funds in wallet to pay for gas. Asset not created.');
             const bioAssetAddress = yield factory.callStatic.createAsset('arbitrary_value');
             const meta = createMetaData(name, desc, license, bioAssetAddress, serviceEndpoint, yield signer.getChainId());
-            const resp = yield post('/asset', meta);
+            const resp = yield axios_1.default.post(`${const_1.INDEXER_URL}/asset`, meta);
             if (resp.status !== 200)
                 return console.error('Error publishing metadata to decentralized storage. Asset not created.');
             const tokenURI = `${const_1.INDEXER_URL}/${meta.did}`;
@@ -137,9 +137,7 @@ function generateDid(nftAddress, chainId) {
     const did_value = ethers_1.ethers.utils.id(nftAddress + chainId);
     return `${const_1.DID_PREFIX}:${did_value}`;
 }
-function post(path, data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const resp = yield (0, supertest_1.default)(const_1.INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
-        return resp;
-    });
-}
+// async function post(path: string, data: any): Promise<request.Response> {
+//   const resp = await request(INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
+//   return resp;
+// }
