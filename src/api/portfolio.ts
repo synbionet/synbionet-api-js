@@ -62,7 +62,12 @@ export class PortfolioNamespace {
    * Creates new bioAsset
    * @public
    */
-  async createAsset(name: string, desc: string, license: string): Promise<any> {
+  async createAsset(
+    name: string,
+    desc: string,
+    license: string,
+    serviceEndpoint: string
+  ): Promise<any> {
     const provider = await this.config.getProvider();
     const signer = provider.getSigner();
     const factory = connectToFactoryContract(signer);
@@ -76,7 +81,14 @@ export class PortfolioNamespace {
       return console.error('Not enough funds in wallet to pay for gas. Asset not created.');
 
     const bioAssetAddress = await factory.callStatic.createAsset('arbitrary_value');
-    const meta = createMetaData(name, desc, license, bioAssetAddress, await signer.getChainId());
+    const meta = createMetaData(
+      name,
+      desc,
+      license,
+      bioAssetAddress,
+      serviceEndpoint,
+      await signer.getChainId()
+    );
     const resp = await post('/asset', meta);
 
     if (resp.status !== 200)
@@ -128,6 +140,7 @@ function createMetaData(
   desc: string,
   license: string,
   nftAddress: string,
+  serviceEndpoint: string,
   chainid: number
 ): AssetMetaData {
   return {
@@ -137,7 +150,7 @@ function createMetaData(
     license: license,
     nftAddress: nftAddress,
     tokenAddress: '0xExampleAddress',
-    serviceEndpoint: 'https://endpoint.example',
+    serviceEndpoint: serviceEndpoint,
   };
 }
 

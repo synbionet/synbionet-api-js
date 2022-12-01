@@ -80,7 +80,7 @@ class PortfolioNamespace {
      * Creates new bioAsset
      * @public
      */
-    createAsset(name, desc, license) {
+    createAsset(name, desc, license, serviceEndpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             const provider = yield this.config.getProvider();
             const signer = provider.getSigner();
@@ -93,7 +93,7 @@ class PortfolioNamespace {
             if (signerBalance.lt(inflatedGasEstimate))
                 return console.error('Not enough funds in wallet to pay for gas. Asset not created.');
             const bioAssetAddress = yield factory.callStatic.createAsset('arbitrary_value');
-            const meta = createMetaData(name, desc, license, bioAssetAddress, yield signer.getChainId());
+            const meta = createMetaData(name, desc, license, bioAssetAddress, serviceEndpoint, yield signer.getChainId());
             const resp = yield post('/asset', meta);
             if (resp.status !== 200)
                 return console.error('Error publishing metadata to decentralized storage. Asset not created.');
@@ -114,7 +114,7 @@ exports.PortfolioNamespace = PortfolioNamespace;
  * @param chainid
  * @returns {AssetMetaData}
  */
-function createMetaData(name, desc, license, nftAddress, chainid) {
+function createMetaData(name, desc, license, nftAddress, serviceEndpoint, chainid) {
     return {
         did: generateDid(nftAddress, chainid),
         name: name,
@@ -122,7 +122,7 @@ function createMetaData(name, desc, license, nftAddress, chainid) {
         license: license,
         nftAddress: nftAddress,
         tokenAddress: '0xExampleAddress',
-        serviceEndpoint: 'https://endpoint.example',
+        serviceEndpoint: serviceEndpoint,
     };
 }
 /**

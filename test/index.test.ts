@@ -34,7 +34,8 @@ describe('create IP, register with market, and get product', () => {
     newIPAssetAddress = await synbionet.portfolio.createAsset(
       'example name',
       'example desc',
-      'http://example.license'
+      'http://example.license',
+      'http://example.serviceEndpoint'
     );
     await synbionet.market.registerAssetOnMarket(newIPAssetAddress, 10, 7, false, 25);
 
@@ -52,7 +53,12 @@ describe('gets all assets', () => {
   it('creates an asset and returns all assets including new one', async () => {
     const synbionet = new SynBioNet();
     const originalAssets = await synbionet.market.getAllBioAssets();
-    await synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license');
+    await synbionet.portfolio.createAsset(
+      'example name',
+      'example desc',
+      'http://example.license',
+      'http://example.serviceEndpoint'
+    );
     const newAssets = await synbionet.market.getAllBioAssets();
     expect(newAssets.length - originalAssets.length).toBe(1);
   });

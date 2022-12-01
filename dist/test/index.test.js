@@ -34,7 +34,7 @@ describe('Get uri', () => {
 describe('create IP, register with market, and get product', () => {
     it(`creates ip, registers with market, market returns product data`, () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
-        newIPAssetAddress = yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license');
+        newIPAssetAddress = yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license', 'http://example.serviceEndpoint');
         yield synbionet.market.registerAssetOnMarket(newIPAssetAddress, 10, 7, false, 25);
         const newProduct = yield synbionet.market.getProduct(newIPAssetAddress);
         expect(newProduct.owner).toBe(deployerAddress);
@@ -49,7 +49,7 @@ describe('gets all assets', () => {
     it('creates an asset and returns all assets including new one', () => __awaiter(void 0, void 0, void 0, function* () {
         const synbionet = new src_1.SynBioNet();
         const originalAssets = yield synbionet.market.getAllBioAssets();
-        yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license');
+        yield synbionet.portfolio.createAsset('example name', 'example desc', 'http://example.license', 'http://example.serviceEndpoint');
         const newAssets = yield synbionet.market.getAllBioAssets();
         expect(newAssets.length - originalAssets.length).toBe(1);
     }));
