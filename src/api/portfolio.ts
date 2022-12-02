@@ -2,7 +2,7 @@ import { SynBioNetConfig } from './synbionet-config';
 import { connectToBioTokenContract, connectToFactoryContract } from '../util/utils';
 import { ethers } from 'ethers';
 import { INDEXER_URL, DID_PREFIX } from '../util/const';
-import Axios from 'axios';
+import * as request from 'superagent';
 
 /**
  * The portfolio namespace contains all the functionality related account assets
@@ -89,7 +89,10 @@ export class PortfolioNamespace {
       serviceEndpoint,
       await signer.getChainId()
     );
-    const resp = await Axios.post(`${INDEXER_URL}/asset`, meta);
+    const resp = await request
+      .post(`${INDEXER_URL}/asset`)
+      .set('Accept', 'application/json')
+      .send(meta);
 
     if (resp.status !== 200)
       return console.error(

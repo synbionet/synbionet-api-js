@@ -8,6 +8,7 @@ import { MARKET_CONTRACT } from '../util/const';
 // import request from 'supertest';
 import Axios from 'axios';
 import { INDEXER_URL } from '../util/const';
+import * as request from 'superagent';
 
 /**
  * The market namespace contains all the functionality related to the synbionet market
@@ -115,23 +116,19 @@ export class MarketNamespace {
 
   async getAllBioAssets(): Promise<any> {
     const resp = await get('/assets');
-    if (resp.status === 200) return resp.data;
+    if (resp.status === 200) return resp.body;
     return undefined;
   }
 
   async getBioAssetById(did: string): Promise<any> {
     const resp = await get(`/asset/${did}`);
-    if (resp.status === 200) return resp.data;
+    if (resp.status === 200) return resp.body;
     return undefined;
   }
 }
 
 async function get(path: string): Promise<any> {
-  const configHeaders = {
-    'content-type': 'application/json',
-    Accept: 'application/json',
-  };
-  return await Axios.get(`${INDEXER_URL}${path}`, { headers: configHeaders });
+  return await request.get(`${INDEXER_URL}${path}`).set('Accept', 'application/json');
 }
 
 // async function get(path: string): Promise<request.Response> {

@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,15 +31,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortfolioNamespace = void 0;
 const utils_1 = require("../util/utils");
 const ethers_1 = require("ethers");
 const const_1 = require("../util/const");
-const axios_1 = __importDefault(require("axios"));
+const request = __importStar(require("superagent"));
 /**
  * The portfolio namespace contains all the functionality related account assets
  *
@@ -94,7 +114,10 @@ class PortfolioNamespace {
                 return console.error('Not enough funds in wallet to pay for gas. Asset not created.');
             const bioAssetAddress = yield factory.callStatic.createAsset('arbitrary_value');
             const meta = createMetaData(name, desc, license, bioAssetAddress, serviceEndpoint, yield signer.getChainId());
-            const resp = yield axios_1.default.post(`${const_1.INDEXER_URL}/asset`, meta);
+            const resp = yield request
+                .post(`${const_1.INDEXER_URL}/asset`)
+                .set('Accept', 'application/json')
+                .send(meta);
             if (resp.status !== 200)
                 return console.error('Error publishing metadata to decentralized storage. Asset not created.');
             const tokenURI = `${const_1.INDEXER_URL}/${meta.did}`;
