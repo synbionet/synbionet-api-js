@@ -10,11 +10,15 @@ An api wrapper for synbionet based on ethers.
 
    **_allow a few seconds for contracts to deploy before testing api, otherwise contract addresses my be impacted_**
 
-3. run `npm install && npm update` to install/update dependencies
+3. Launch the indexer from the synbionet-indexer repo by navigating to the project folder andusing 'make run'.
 
-4. run `npm run test` to test
+   **_will add this step to docker build in future_**
 
-5. run `npx tsc` to compile typescript to be used by synbionet-webui
+4. run `npm install && npm update` to install/update dependencies
+
+5. run `npm run test` to test
+
+6. run `npx tsc` to compile typescript to be used by synbionet-webui
 
 ### TODO:
 
