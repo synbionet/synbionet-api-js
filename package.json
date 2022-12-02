@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@synbionet/contracts": "github:synbionet/synbionet-core",
-    "axios": "1.1.3",
     "ethers": "^5.7.2",
     "superagent": "^8.0.4"
   }

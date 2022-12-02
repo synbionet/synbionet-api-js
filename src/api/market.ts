@@ -6,7 +6,6 @@ import {
 } from '../util/utils';
 import { MARKET_CONTRACT } from '../util/const';
 // import request from 'supertest';
-import Axios from 'axios';
 import { INDEXER_URL } from '../util/const';
 import * as request from 'superagent';
 
@@ -130,7 +129,3 @@ export class MarketNamespace {
 async function get(path: string): Promise<any> {
   return await request.get(`${INDEXER_URL}${path}`).set('Accept', 'application/json');
 }
-
-// async function get(path: string): Promise<request.Response> {
-//   const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
-//   return resp;

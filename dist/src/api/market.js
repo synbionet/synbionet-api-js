@@ -35,6 +35,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MarketNamespace = void 0;
 const utils_1 = require("../util/utils");
 const const_1 = require("../util/const");
+// import request from 'supertest';
 const const_2 = require("../util/const");
 const request = __importStar(require("superagent"));
 /**
@@ -161,6 +162,3 @@ function get(path) {
         return yield request.get(`${const_2.INDEXER_URL}${path}`).set('Accept', 'application/json');
     });
 }
-// async function get(path: string): Promise<request.Response> {
-//   const resp = await request(INDEXER_URL).get(path).set('Accept', 'application/json');
-//   return resp;

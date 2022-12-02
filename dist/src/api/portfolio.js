@@ -160,7 +160,3 @@ function generateDid(nftAddress, chainId) {
     const did_value = ethers_1.ethers.utils.id(nftAddress + chainId);
     return `${const_1.DID_PREFIX}:${did_value}`;
 }
-// async function post(path: string, data: any): Promise<request.Response> {
-//   const resp = await request(INDEXER_URL).post(path).set('Accept', 'application/json').send(data);
-//   return resp;
-// }
