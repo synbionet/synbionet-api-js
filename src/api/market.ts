@@ -109,8 +109,13 @@ export class MarketNamespace {
     const provider = await this.config.getProvider();
     const signer = provider.getSigner();
     const market = connectToMarketContract(signer);
+    const { ipPrice } = await market.getProduct(contractAddress);
+    const bioToken = connectToBioTokenContract(signer);
+    const tx0 = await bioToken.approve(MARKET_CONTRACT.address, ipPrice);
+    await tx0.wait();
     const tx = await market.buyAsset(contractAddress);
-    return tx.wait();
+    await tx.wait();
+    return;
   }
 
   async getAllBioAssets(): Promise<any> {

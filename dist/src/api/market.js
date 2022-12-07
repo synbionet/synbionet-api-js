@@ -135,8 +135,13 @@ class MarketNamespace {
             const provider = yield this.config.getProvider();
             const signer = provider.getSigner();
             const market = (0, utils_1.connectToMarketContract)(signer);
+            const { ipPrice } = yield market.getProduct(contractAddress);
+            const bioToken = (0, utils_1.connectToBioTokenContract)(signer);
+            const tx0 = yield bioToken.approve(const_1.MARKET_CONTRACT.address, ipPrice);
+            yield tx0.wait();
             const tx = yield market.buyAsset(contractAddress);
-            return tx.wait();
+            yield tx.wait();
+            return;
         });
     }
     getAllBioAssets() {
