@@ -40,6 +40,38 @@ class SynBioNet {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.config.ethereumClient)
                 return undefined;
+            try {
+                yield this.config.ethereumClient.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0xf00' }],
+                });
+            }
+            catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask.
+                if (switchError.code === 4902) {
+                    try {
+                        yield this.config.ethereumClient.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [
+                                {
+                                    chainId: '0x7a69',
+                                    chainName: 'Anvil Dev',
+                                    rpcUrls: ['http://localhost:8545/'],
+                                    nativeCurrency: {
+                                        name: 'Ethereum',
+                                        symbol: 'ETH',
+                                        decimals: 18,
+                                    },
+                                },
+                            ],
+                        });
+                    }
+                    catch (addError) {
+                        console.error('error adding network');
+                    }
+                }
+                // handle other "switch" errors
+            }
             const accounts = yield this.config.ethereumClient.request({
                 method: 'eth_requestAccounts',
             });
